@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import org.apache.commons.io.FileUtils;
 
@@ -134,7 +135,9 @@ public class EventExamples {
 		// pattern, but resorted to instanceof checks.
 	  PrintWriter pw = null;
 	    try {
-        pw = new PrintWriter(new File("events.csv"));
+        pw  = new PrintWriter(new FileOutputStream(
+            new File("events.csv"), 
+            true /* append = true */)); 
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
