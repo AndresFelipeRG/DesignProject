@@ -46,6 +46,7 @@ import cc.kave.commons.model.events.visualstudio.WindowEvent;
 import cc.kave.commons.model.ssts.ISST;
 import cc.kave.commons.utils.io.IReadingArchive;
 import cc.kave.commons.utils.io.ReadingArchive;
+import cc.kave.commons.utils.io.json.JsonUtils;
 
 /**
  * Simple example that shows how the interaction dataset can be opened, all
@@ -96,8 +97,9 @@ public class GettingStarted {
         pw.write(sb.toString());
         pw.close();
 		for (String userZip : userZips) {
+		    if(userZip.compareTo("2016-09-26/100.zip") != 0) {
 			System.out.printf("\n#### processing user zip: %s #####\n", userZip);
-			processUserZip(userZip);
+			processUserZip(userZip);}
 		}
 	}
 
@@ -108,13 +110,15 @@ public class GettingStarted {
 		try (IReadingArchive ra = new ReadingArchive(new File(eventsDir, userZip))) {
 			// ... and iterate over content.
 			// the iteration will stop after 200 events to speed things up.
-			while (ra.hasNext() && (numProcessedEvents++ < 200)) {
+			while (ra.hasNext() && (numProcessedEvents++ < 300000)) {
 				/*
 				 * within the userZip, each stored event is contained as a single file that
 				 * contains the Json representation of a subclass of IDEEvent.
 				 */
-				IDEEvent e = ra.getNext(IDEEvent.class);
-
+				//IDEEvent e = ra.getNext(IDEEvent.class);
+				String json = ra.getNextPlain();
+                // .. and call the deserializer yourself.
+                IIDEEvent e = JsonUtils.fromJson(json, IIDEEvent.class);
 				// the events can then be processed individually
 				//processEvent(e);
 				
@@ -171,7 +175,11 @@ public class GettingStarted {
           // if the correct type is identified, you can cast it...
           CommandEvent ce = (CommandEvent) event;
           // ...and access the special context for this kind of event
-          sb.append(user);
+       
+          String name = new File(user).getName();
+          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+          
+          sb.append(u_name);
           sb.append(",");
           sb.append(ce.IDESessionUUID);
           sb.append(",");
@@ -189,7 +197,10 @@ public class GettingStarted {
       }
       if(event instanceof ActivityEvent) {
          ActivityEvent ae = (ActivityEvent) event;
-         sb.append(user);
+         String name = new File(user).getName();
+         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+         sb.append(u_name);
          sb.append(",");
          sb.append(ae.IDESessionUUID);
          sb.append(",");
@@ -206,7 +217,10 @@ public class GettingStarted {
       }
       if(event instanceof InstallEvent) {
          InstallEvent ie = (InstallEvent) event;
-         sb.append(user);
+         String name = new File(user).getName();
+         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+         
+         sb.append(u_name);
          sb.append(",");
          sb.append(ie.IDESessionUUID);
          sb.append(",");
@@ -222,7 +236,10 @@ public class GettingStarted {
       }
       if(event instanceof CompletionEvent) {
          CompletionEvent ce = (CompletionEvent) event;
-         sb.append(user);
+         String name = new File(user).getName();
+         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+         
+         sb.append(u_name);
          sb.append(",");
          sb.append(ce.IDESessionUUID);
          sb.append(",");
@@ -238,7 +255,10 @@ public class GettingStarted {
       }
       if(event instanceof TestRunEvent) {
          TestRunEvent tre = (TestRunEvent) event;
-         sb.append(user);
+         String name = new File(user).getName();
+         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+         
+         sb.append(u_name);
          sb.append(",");
          sb.append(tre.IDESessionUUID);
          sb.append(",");
@@ -255,7 +275,10 @@ public class GettingStarted {
       if(event instanceof UserProfileEvent) {
         UserProfileEvent upe = (UserProfileEvent) event;
         
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(upe.IDESessionUUID);
         sb.append(",");
@@ -271,7 +294,10 @@ public class GettingStarted {
       }
       if(event instanceof VersionControlEvent) {
         VersionControlEvent vce = (VersionControlEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(vce.IDESessionUUID);
         sb.append(",");
@@ -285,7 +311,10 @@ public class GettingStarted {
       }
       if(event instanceof WindowEvent) {
         WindowEvent we = (WindowEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(we.IDESessionUUID);
         sb.append(",");
@@ -298,7 +327,10 @@ public class GettingStarted {
       }
       if(event instanceof BuildEvent) {
         BuildEvent be = (BuildEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(be.IDESessionUUID);
         sb.append(",");
@@ -311,7 +343,10 @@ public class GettingStarted {
       }
       if(event instanceof DebuggerEvent) {
         DebuggerEvent de = (DebuggerEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(de.IDESessionUUID);
         sb.append(",");
@@ -324,7 +359,10 @@ public class GettingStarted {
       }
       if(event instanceof DocumentEvent) {
         DocumentEvent de  = (DocumentEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(de.IDESessionUUID);
         sb.append(",");
@@ -337,7 +375,10 @@ public class GettingStarted {
       }
       if(event instanceof EditEvent) {
         EditEvent ee = (EditEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(ee.IDESessionUUID);
         sb.append(",");
@@ -350,7 +391,10 @@ public class GettingStarted {
       }
       if(event instanceof FindEvent) {
         FindEvent fe = (FindEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(fe.IDESessionUUID);
         sb.append(",");
@@ -364,7 +408,10 @@ public class GettingStarted {
       }
       if(event instanceof IDEStateEvent) {
         IDEStateEvent ide = (IDEStateEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(ide.IDESessionUUID);
         sb.append(",");
@@ -377,7 +424,10 @@ public class GettingStarted {
       }
       if(event instanceof SolutionEvent) {
         SolutionEvent se = (SolutionEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(se.IDESessionUUID);
         sb.append(",");
@@ -390,7 +440,10 @@ public class GettingStarted {
       }
       if(event instanceof UpdateEvent) {
         UpdateEvent ue = (UpdateEvent) event;
-        sb.append(user);
+        String name = new File(user).getName();
+        String u_name = name.substring(0,name.lastIndexOf(".zip"));
+        
+        sb.append(u_name);
         sb.append(",");
         sb.append(ue.IDESessionUUID);
         sb.append(",");
@@ -404,7 +457,10 @@ public class GettingStarted {
       
       if(event instanceof ErrorEvent) {
           ErrorEvent ee = (ErrorEvent) event;
-           sb.append(user);
+          String name = new File(user).getName();
+          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+          
+          sb.append(u_name);
             sb.append(",");
             sb.append(ee.IDESessionUUID);
             sb.append(",");
@@ -418,7 +474,10 @@ public class GettingStarted {
       if(event instanceof InfoEvent) {
          
           InfoEvent ie = (InfoEvent) event;
-           sb.append(user);
+          String name = new File(user).getName();
+          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+          
+          sb.append(u_name);
             sb.append(",");
             sb.append(ie.IDESessionUUID);
             sb.append(",");
@@ -431,7 +490,10 @@ public class GettingStarted {
       }
       if(event instanceof NavigationEvent) {
           NavigationEvent ne = (NavigationEvent) event;
-          sb.append(user);
+          String name = new File(user).getName();
+          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+          
+          sb.append(u_name);
           sb.append(",");
           sb.append(ne.IDESessionUUID);
           sb.append(",");
@@ -444,7 +506,10 @@ public class GettingStarted {
       }
       if(event instanceof  SystemEvent) {
           SystemEvent  se = (SystemEvent) event;
-           sb.append(user);
+          String name = new File(user).getName();
+          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+          
+          sb.append(u_name);
             sb.append(",");
             sb.append(se.IDESessionUUID);
             sb.append(",");
@@ -460,7 +525,10 @@ public class GettingStarted {
           // there a many different event types to process, it is recommended
           // that you browse the package to see all types and consult the
           // website for the documentation of the semantics of each event...
-         sb.append(user);
+         String name = new File(user).getName();
+         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+         
+         sb.append(u_name);
          sb.append(",");
          sb.append("N/A");
          sb.append(",");
