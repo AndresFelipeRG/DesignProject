@@ -55,6 +55,27 @@ import cc.kave.commons.utils.io.json.JsonUtils;
 public class GettingStarted {
 
 	private String eventsDir;
+	static int commandEvents;
+	static int activityEvents;
+	static int testse;
+	static int versione;
+	static int windowe;
+	static int builde;
+	static int completionevents;
+	static int systemevents;
+	static int navigationevents;
+	static int other;
+	static int installevent;
+	static int documente;
+	static int debuggere;
+	static int userprofile;
+	static int ideee;
+	static int editevent;
+	static int finde;
+	static int updatevent;
+	static int solutionevent;
+	static int errore;
+	static int infoe;
 
 	public GettingStarted(String eventsDir) {
 		this.eventsDir = eventsDir;
@@ -101,6 +122,29 @@ public class GettingStarted {
 			System.out.printf("\n#### processing user zip: %s #####\n", userZip);
 			processUserZip(userZip);}
 		}
+		System.out.println("Command events: "+ commandEvents);
+		System.out.println("activity events: "+ activityEvents);
+		System.out.println("test events: "+ testse);
+		System.out.println("version cotnrol events: "+ versione);
+		System.out.println("window events: "+ windowe);
+		System.out.println("build events: "+ builde);
+		System.out.println("completion events: "+ completionevents);
+		System.out.println("system events: "+ systemevents);
+		System.out.println("navigation events: "+ navigationevents);
+		System.out.println("other events: "+ other);
+		System.out.println("install events: "+ installevent);
+		System.out.println("document events: "+ documente);
+		System.out.println("debugger events: "+ debuggere);
+		System.out.println("userprofile events: "+ userprofile);
+		System.out.println("ideee events: "+ ideee);
+		System.out.println("edit events: "+ editevent);
+		System.out.println("find events: "+ finde);
+		System.out.println("update events: "+ updatevent);
+		System.out.println("solution events: "+ solutionevent);
+		System.out.println("error events: "+ errore);
+		System.out.println("info events: "+ infoe);
+	  
+
 	}
 
 	private void processUserZip(String userZip) {
@@ -110,7 +154,11 @@ public class GettingStarted {
 		try (IReadingArchive ra = new ReadingArchive(new File(eventsDir, userZip))) {
 			// ... and iterate over content.
 			// the iteration will stop after 200 events to speed things up.
+<<<<<<< HEAD
 			while (ra.hasNext() && (numProcessedEvents++ < 300000)) {
+=======
+			while (ra.hasNext() && (numProcessedEvents++ < 5000000)) {
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
 				/*
 				 * within the userZip, each stored event is contained as a single file that
 				 * contains the Json representation of a subclass of IDEEvent.
@@ -173,6 +221,8 @@ public class GettingStarted {
       StringBuilder sb = new StringBuilder();
       if (event instanceof CommandEvent) {
           // if the correct type is identified, you can cast it...
+         commandEvents+=1;
+       
           CommandEvent ce = (CommandEvent) event;
           // ...and access the special context for this kind of event
        
@@ -193,13 +243,18 @@ public class GettingStarted {
           
           pw.write(sb.toString());
           pw.close();
+          return;
           //System.out.println(ce.CommandId);
       }
       if(event instanceof ActivityEvent) {
          ActivityEvent ae = (ActivityEvent) event;
          String name = new File(user).getName();
          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+         activityEvents+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
          sb.append(u_name);
          sb.append(",");
          sb.append(ae.IDESessionUUID);
@@ -213,13 +268,18 @@ public class GettingStarted {
          
          pw.write(sb.toString());
          pw.close();
+         return;
          
       }
       if(event instanceof InstallEvent) {
          InstallEvent ie = (InstallEvent) event;
          String name = new File(user).getName();
          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
          
+=======
+         installevent+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
          sb.append(u_name);
          sb.append(",");
          sb.append(ie.IDESessionUUID);
@@ -233,12 +293,17 @@ public class GettingStarted {
          
          pw.write(sb.toString());
          pw.close();
+         return;
       }
       if(event instanceof CompletionEvent) {
          CompletionEvent ce = (CompletionEvent) event;
          String name = new File(user).getName();
          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
          
+=======
+         completionevents+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
          sb.append(u_name);
          sb.append(",");
          sb.append(ce.IDESessionUUID);
@@ -252,12 +317,17 @@ public class GettingStarted {
          
          pw.write(sb.toString());
          pw.close();
+         return;
       }
       if(event instanceof TestRunEvent) {
          TestRunEvent tre = (TestRunEvent) event;
          String name = new File(user).getName();
          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
          
+=======
+         testse+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
          sb.append(u_name);
          sb.append(",");
          sb.append(tre.IDESessionUUID);
@@ -271,13 +341,18 @@ public class GettingStarted {
          
          pw.write(sb.toString());
          pw.close();
+         return;
       }
       if(event instanceof UserProfileEvent) {
         UserProfileEvent upe = (UserProfileEvent) event;
         
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        userprofile+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(upe.IDESessionUUID);
@@ -291,12 +366,17 @@ public class GettingStarted {
         
         pw.write(sb.toString());
         pw.close();
+        return;
       }
       if(event instanceof VersionControlEvent) {
         VersionControlEvent vce = (VersionControlEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        versione+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(vce.IDESessionUUID);
@@ -307,13 +387,21 @@ public class GettingStarted {
         sb.append(",");
         sb.append("N/A");
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
         
       }
       if(event instanceof WindowEvent) {
         WindowEvent we = (WindowEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        windowe+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(we.IDESessionUUID);
@@ -324,12 +412,20 @@ public class GettingStarted {
         sb.append(",");
         sb.append("N/A");
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       if(event instanceof BuildEvent) {
         BuildEvent be = (BuildEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        builde+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(be.IDESessionUUID);
@@ -340,12 +436,20 @@ public class GettingStarted {
         sb.append(",");
         sb.append(be.Duration.getSeconds());
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       if(event instanceof DebuggerEvent) {
         DebuggerEvent de = (DebuggerEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        debuggere+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(de.IDESessionUUID);
@@ -356,12 +460,20 @@ public class GettingStarted {
         sb.append(",");
         sb.append("N/A");
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       if(event instanceof DocumentEvent) {
         DocumentEvent de  = (DocumentEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        documente+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(de.IDESessionUUID);
@@ -372,12 +484,20 @@ public class GettingStarted {
         sb.append(",");
         sb.append("N/A");
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       if(event instanceof EditEvent) {
         EditEvent ee = (EditEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        editevent+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(ee.IDESessionUUID);
@@ -388,12 +508,20 @@ public class GettingStarted {
         sb.append(",");
         sb.append(ee.Duration.getSeconds());
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       if(event instanceof FindEvent) {
         FindEvent fe = (FindEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        finde+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(fe.IDESessionUUID);
@@ -404,13 +532,20 @@ public class GettingStarted {
         sb.append(",");
         sb.append("N/A");
         sb.append("\n");
-        
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       if(event instanceof IDEStateEvent) {
         IDEStateEvent ide = (IDEStateEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        ideee+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(ide.IDESessionUUID);
@@ -421,12 +556,20 @@ public class GettingStarted {
         sb.append(",");
         sb.append("N/A");
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       if(event instanceof SolutionEvent) {
         SolutionEvent se = (SolutionEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        solutionevent +=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(se.IDESessionUUID);
@@ -437,12 +580,20 @@ public class GettingStarted {
         sb.append(",");
         sb.append("N/A");
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       if(event instanceof UpdateEvent) {
         UpdateEvent ue = (UpdateEvent) event;
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
         
+=======
+        updatevent+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
         sb.append(u_name);
         sb.append(",");
         sb.append(ue.IDESessionUUID);
@@ -453,13 +604,21 @@ public class GettingStarted {
         sb.append(",");
         sb.append("N/A");
         sb.append("\n");
+
+        pw.write(sb.toString());
+        pw.close();
+        return;
       }
       
       if(event instanceof ErrorEvent) {
           ErrorEvent ee = (ErrorEvent) event;
           String name = new File(user).getName();
           String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
           
+=======
+          errore+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
           sb.append(u_name);
             sb.append(",");
             sb.append(ee.IDESessionUUID);
@@ -470,13 +629,21 @@ public class GettingStarted {
             sb.append(",");
             sb.append("N/A");
             sb.append("\n");
+
+            pw.write(sb.toString());
+            pw.close();
+            return;
       }
       if(event instanceof InfoEvent) {
          
           InfoEvent ie = (InfoEvent) event;
           String name = new File(user).getName();
           String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
           
+=======
+          infoe+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
           sb.append(u_name);
             sb.append(",");
             sb.append(ie.IDESessionUUID);
@@ -487,12 +654,20 @@ public class GettingStarted {
             sb.append(",");
             sb.append("N/A");
             sb.append("\n");
+
+            pw.write(sb.toString());
+            pw.close();
+            return;
       }
       if(event instanceof NavigationEvent) {
           NavigationEvent ne = (NavigationEvent) event;
           String name = new File(user).getName();
           String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
           
+=======
+          navigationevents+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
           sb.append(u_name);
           sb.append(",");
           sb.append(ne.IDESessionUUID);
@@ -503,12 +678,20 @@ public class GettingStarted {
           sb.append(",");
           sb.append("N/A");
           sb.append("\n");
+
+          pw.write(sb.toString());
+          pw.close();
+          return;
       }
       if(event instanceof  SystemEvent) {
           SystemEvent  se = (SystemEvent) event;
           String name = new File(user).getName();
           String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
           
+=======
+          systemevents+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
           sb.append(u_name);
             sb.append(",");
             sb.append(se.IDESessionUUID);
@@ -519,6 +702,10 @@ public class GettingStarted {
             sb.append(",");
             sb.append("N/A");
             sb.append("\n");
+
+            pw.write(sb.toString());
+            pw.close();
+            return;
       }
       
        else {
@@ -527,17 +714,24 @@ public class GettingStarted {
           // website for the documentation of the semantics of each event...
          String name = new File(user).getName();
          String u_name = name.substring(0,name.lastIndexOf(".zip"));
+<<<<<<< HEAD
          
+=======
+         other+=1;
+>>>>>>> 25957ac672913d98922684952d76ae1e169fbd77
          sb.append(u_name);
          sb.append(",");
          sb.append("N/A");
          sb.append(",");
-         sb.append("OTHER");
+         sb.append(event.getClass().getSimpleName());
          sb.append(",");
-         sb.append("N/A");
+         sb.append(event.getTriggeredAt());
          sb.append(",");
          sb.append("N/A");
          sb.append("\n");
+
+         pw.write(sb.toString());
+         pw.close();
        }}
 	private void process(CommandEvent ce) {
 		System.out.printf("found a CommandEvent (id: %s)\n", ce.getCommandId());
