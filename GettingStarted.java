@@ -81,6 +81,8 @@ public class GettingStarted {
 	static int errore;
 	static int infoe;
 	static int exceptions;
+	static ArrayList<String> all_files = new ArrayList<String>();
+	static ArrayList<String> files_missing_id_profile = new ArrayList<String>();
 	static Map<String, ArrayList<String>> ids = new HashMap<String, ArrayList<String>>();
 
 	public GettingStarted(String eventsDir) {
@@ -96,6 +98,19 @@ public class GettingStarted {
 		 * have collected for a specific user, the folder represents the first day when
 		 * the user uploaded data.
 		 */
+		 PrintWriter completionEvents= null;
+         try {
+             completionEvents = new PrintWriter(new FileOutputStream(
+             new File("CompletionEvents.csv"), 
+             true /* append = true */)); 
+         } catch (FileNotFoundException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         }
+         StringBuilder s1 = new StringBuilder();
+         s1.append("file\n");
+         completionEvents.write(s1.toString());
+         completionEvents.close();
 		Set<String> userZips = IoHelper.findAllZips(eventsDir);
         System.out.println(userZips.size());
         PrintWriter pw = null;
@@ -118,7 +133,8 @@ public class GettingStarted {
         sb.append("TriggeredAt");
         sb.append(",");
         
-        sb.append("Duration");
+        sb.append("Duration,");
+        sb.append("ProfileID");
         sb.append("\n");
         
         pw.write(sb.toString());
@@ -135,20 +151,33 @@ public class GettingStarted {
         StringBuilder sb2 = new StringBuilder();
         sb2.append("file");
         sb2.append(",");
-        sb2.append("IDESessionUUID");
-        sb2.append(",");
-        sb2.append("Event");
-        sb2.append(",");
-        sb2.append("TriggeredAt");
-        sb2.append(",");
+        sb2.append("JSON");
         
-        sb2.append("Duration");
         sb2.append("\n");
         
         error.write(sb2.toString());
         error.close();
+        PrintWriter events_per_user = null;
+        try {
+            events_per_user  = new PrintWriter(new FileOutputStream(
+            new File("events_per_user.csv"), 
+            true /* append = true */)); 
+        } catch (FileNotFoundException e2) {
+        // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
+        StringBuilder sb3 = new StringBuilder();
+        
+        sb3.append("user");
+        sb3.append(",");
+        sb3.append("number of events");
+        sb3.append("\n");
+        
+        events_per_user.write(sb3.toString());
+        events_per_user.close();
 		for (String userZip : userZips) {
 		  //  if(userZip.compareTo("2016-09-26/100.zip") != 0) {
+		    all_files.add(userZip);
 			System.out.printf("\n#### processing user zip: %s #####\n", userZip);
 			processUserZip(userZip);
 			//}
@@ -178,7 +207,7 @@ public class GettingStarted {
 		System.out.println("EXCEPTIONS : " + exceptions);
 		System.out.println("ids: "+ ids.size());
 		Set<String> keys = ids.keySet();
-		StringBuilder sb3 = new StringBuilder();
+		StringBuilder sb4 = new StringBuilder();
 		sb2.append("id, file\n");
 		Map<String, ArrayList<String>>docs_id = new HashMap<String, ArrayList<String>>();
 
@@ -202,29 +231,41 @@ public class GettingStarted {
 	                  docs_id.put(files.get(i), pair);
 	               }
 	               docs_id.get(files.get(i)).add(s);
-	               sb3.append( s + ","+files.get(i) +"\n");
+	               sb4.append( s + ","+files.get(i) +"\n");
 	             
 	          
 	           }
 	        }
 	    
-	    pw2.write(sb3.toString());
+	    pw2.write(sb4.toString());
 		pw2.close();
 		System.out.println("There are "+ docs.size()+ "files");
+		boolean cond_all_files_map_to_1_id = true;
 		for(int i = 0; i < docs.size(); i++) {
 		  boolean cond = true;
 		  System.out.println("File " + docs.get(i)+ " has"+ " "+ docs_id.get(docs.get(i)).size());
 		  for(int j = 0; j < docs_id.get(docs.get(i)).size(); j++) {
 		    //System.out.println("file "+ docs.get(i)+ " id: "+docs_id.get(docs.get(i)).get(j));
-		    if(j > 1) {
+		    if(j >= 1) {
 		      if(docs_id.get(docs.get(i)).get(j) != docs_id.get(docs.get(i)).get(j-1)) {
 		        cond = false;
 		      }
 		    }
 		  }
-		  System.out.println("This file "+ docs.get(i) + "is correct? "+ cond);
+		  cond_all_files_map_to_1_id = cond_all_files_map_to_1_id&& cond ;
+		  
 		}
-	  
+		for(int i = 0; i < all_files.size(); i++) {
+		    
+		       if(!docs.contains(all_files.get(i))) {
+		         files_missing_id_profile.add(all_files.get(i));
+		       }
+		    
+		}
+		System.out.println("Each file maps exactly to an ID?  "+ cond_all_files_map_to_1_id );
+	    for(int k = 0; k < files_missing_id_profile.size();k++) {
+	      System.out.println(files_missing_id_profile.get(k));
+	    }
 
 	}
 
@@ -252,14 +293,71 @@ public class GettingStarted {
 				process(e, userZip);
 				}
 				catch(DateTimeException e){
-				  
-				  exceptions+=1;
+				   PrintWriter error = null;
+			        try {
+			        error  = new PrintWriter(new FileOutputStream(
+			            new File("errors.csv"), 
+			            true /* append = true */)); 
+			        } catch (FileNotFoundException e2) {
+			        // TODO Auto-generated catch block
+			        e.printStackTrace();
+			        }
+			        StringBuilder sb2 = new StringBuilder();
+			        sb2.append(userZip);
+			        sb2.append(",");
+			        sb2.append(ra.getNextPlain());
+			        sb2.append("\n");
+			        
+			        error.write(sb2.toString());
+			        error.close();
+				    exceptions+=1;
 				  
 				}
 				finally {
 				  continue;
 				}
 			}
+			PrintWriter events_per_user = null;
+            try {
+                events_per_user  = new PrintWriter(new FileOutputStream(
+                new File("events_per_user.csv"), 
+                true /* append = true */)); 
+            } catch (FileNotFoundException e2) {
+            // TODO Auto-generated catch block
+                e2.printStackTrace();
+            }
+            StringBuilder sb2 = new StringBuilder();
+            
+            sb2.append(userZip);
+            sb2.append(",");
+            sb2.append(numProcessedEvents);
+            sb2.append("\n");
+            
+            events_per_user.write(sb2.toString());
+            events_per_user.close();
+            if(numProcessedEvents >= 2000) {
+            PrintWriter events2000 = null;
+            try {
+                events2000  = new PrintWriter(new FileOutputStream(
+                new File("userswithmorethan2000events.csv"), 
+                true /* append = true */)); 
+            } catch (FileNotFoundException e2) {
+            // TODO Auto-generated catch block
+                e2.printStackTrace();
+            }
+            StringBuilder sb5 = new StringBuilder();
+            
+            sb5.append(userZip);
+            sb5.append(",");
+            sb5.append(numProcessedEvents);
+            sb5.append("\n");
+            
+            events2000.write(sb5.toString());
+            events2000.close();
+            }
+            
+            
+			
 		}
 	}
 
@@ -327,7 +425,7 @@ public class GettingStarted {
           sb.append(",");
           
           sb.append("N/A");
-          sb.append("\n");
+          sb.append(",\n");
           
           pw.write(sb.toString());
           pw.close();
@@ -348,7 +446,7 @@ public class GettingStarted {
          sb.append(ae.TriggeredAt);
          sb.append(",");
          sb.append(ae.Duration.getSeconds());
-         sb.append("\n");
+         sb.append(",\n");
          
          pw.write(sb.toString());
          pw.close();
@@ -368,7 +466,7 @@ public class GettingStarted {
          sb.append(",");
          sb.append(ie.TriggeredAt);
          sb.append(",");
-         sb.append("N/A");
+         sb.append("N/A,");
          sb.append("\n");
          
          pw.write(sb.toString());
@@ -380,7 +478,7 @@ public class GettingStarted {
          String name = new File(user).getName();
          String u_name = name.substring(0,name.lastIndexOf(".zip"));
          completionevents+=1;
-         sb.append(sb.append(new File(user).getParent() +"/"+name));
+         sb.append((new File(user).getParent() +"/"+name));
          sb.append(",");
          sb.append(ce.IDESessionUUID);
          sb.append(",");
@@ -388,11 +486,41 @@ public class GettingStarted {
          sb.append(",");
          sb.append(ce.TriggeredAt);
          sb.append(",");
-         sb.append("N/A");
+         sb.append("N/A,");
          sb.append("\n");
          
          pw.write(sb.toString());
          pw.close();
+         PrintWriter completionEvents= null;
+         try {
+             completionEvents = new PrintWriter(new FileOutputStream(
+             new File("CompletionEvents.csv"), 
+             true /* append = true */)); 
+         } catch (FileNotFoundException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         }
+         StringBuilder sb2 = new StringBuilder();
+         
+         
+         ArrayList<String> selects = new ArrayList<String>();
+         int selections_length = ce.selections.size();
+         for(int i = 0; i < selections_length ; i++ ) {
+              
+              selects.add(ce.selections.get(i).toString());
+         }
+         sb2.append((new File(user).getParent() +"/"+name));
+         sb2.append(",");
+         for(int i = 0; i < selects.size(); i++) {
+          
+           
+           sb2.append(selects.get(i));
+           sb2.append(",");
+         }
+         sb2.append("\n");
+         
+         completionEvents.write(sb2.toString());
+         completionEvents.close();
          return;
       }
       if(event instanceof TestRunEvent) {
@@ -400,7 +528,7 @@ public class GettingStarted {
          String name = new File(user).getName();
          String u_name = name.substring(0,name.lastIndexOf(".zip"));
          testse+=1;
-         sb.append(sb.append(new File(user).getParent() +"/"+name));
+         sb.append(new File(user).getParent() +"/"+name);
          sb.append(",");
          sb.append(tre.IDESessionUUID);
          sb.append(",");
@@ -409,7 +537,7 @@ public class GettingStarted {
          sb.append(tre.TriggeredAt);
          sb.append(",");
          sb.append(tre.Duration.getSeconds());
-         sb.append("\n");
+         sb.append(",\n");
          
          pw.write(sb.toString());
          pw.close();
@@ -431,7 +559,8 @@ public class GettingStarted {
         sb.append(",");
         sb.append(upe.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
+        sb.append(upe.ProfileId);
         sb.append("\n");
         
         pw.write(sb.toString());
@@ -446,7 +575,7 @@ public class GettingStarted {
         }
         else {
            if(!ids.get(upe.ProfileId).contains(new File(user).getParent() +"/"+name)) {
-           ids.get(upe.ProfileId).add(new File(user).getParent() +"/"+name);
+              ids.get(upe.ProfileId).add(new File(user).getParent() +"/"+name);
            }
         }
         return;
@@ -456,7 +585,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         versione+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(vce.IDESessionUUID);
         sb.append(",");
@@ -464,7 +593,7 @@ public class GettingStarted {
         sb.append(",");
         sb.append(vce.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
         sb.append("\n");
 
         pw.write(sb.toString());
@@ -477,7 +606,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         windowe+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(we.IDESessionUUID);
         sb.append(",");
@@ -485,7 +614,7 @@ public class GettingStarted {
         sb.append(",");
         sb.append(we.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
         sb.append("\n");
 
         pw.write(sb.toString());
@@ -497,7 +626,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         builde+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(be.IDESessionUUID);
         sb.append(",");
@@ -506,7 +635,7 @@ public class GettingStarted {
         sb.append(be.TriggeredAt);
         sb.append(",");
         sb.append(be.Duration.getSeconds());
-        sb.append("\n");
+        sb.append(",\n");
 
         pw.write(sb.toString());
         pw.close();
@@ -517,7 +646,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         debuggere+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(de.IDESessionUUID);
         sb.append(",");
@@ -525,7 +654,7 @@ public class GettingStarted {
         sb.append(",");
         sb.append(de.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
         sb.append("\n");
 
         pw.write(sb.toString());
@@ -537,7 +666,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         documente+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(de.IDESessionUUID);
         sb.append(",");
@@ -545,7 +674,7 @@ public class GettingStarted {
         sb.append(",");
         sb.append(de.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
         sb.append("\n");
 
         pw.write(sb.toString());
@@ -557,7 +686,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         editevent+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(ee.IDESessionUUID);
         sb.append(",");
@@ -566,7 +695,7 @@ public class GettingStarted {
         sb.append(ee.TriggeredAt);
         sb.append(",");
         sb.append(ee.Duration.getSeconds());
-        sb.append("\n");
+        sb.append(",\n");
 
         pw.write(sb.toString());
         pw.close();
@@ -577,7 +706,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         finde+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(fe.IDESessionUUID);
         sb.append(",");
@@ -585,7 +714,7 @@ public class GettingStarted {
         sb.append(",");
         sb.append(fe.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
         sb.append("\n");
 
         pw.write(sb.toString());
@@ -597,7 +726,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         ideee+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(ide.IDESessionUUID);
         sb.append(",");
@@ -605,7 +734,7 @@ public class GettingStarted {
         sb.append(",");
         sb.append(ide.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
         sb.append("\n");
 
         pw.write(sb.toString());
@@ -617,7 +746,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         solutionevent +=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(se.IDESessionUUID);
         sb.append(",");
@@ -625,7 +754,7 @@ public class GettingStarted {
         sb.append(",");
         sb.append(se.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
         sb.append("\n");
 
         pw.write(sb.toString());
@@ -637,7 +766,7 @@ public class GettingStarted {
         String name = new File(user).getName();
         String u_name = name.substring(0,name.lastIndexOf(".zip"));
         updatevent+=1;
-        sb.append(sb.append(new File(user).getParent() +"/"+name));
+        sb.append(new File(user).getParent() +"/"+name);
         sb.append(",");
         sb.append(ue.IDESessionUUID);
         sb.append(",");
@@ -645,7 +774,7 @@ public class GettingStarted {
         sb.append(",");
         sb.append(ue.TriggeredAt);
         sb.append(",");
-        sb.append("N/A");
+        sb.append("N/A,");
         sb.append("\n");
 
         pw.write(sb.toString());
@@ -658,7 +787,7 @@ public class GettingStarted {
           String name = new File(user).getName();
           String u_name = name.substring(0,name.lastIndexOf(".zip"));
           errore+=1;
-          sb.append(sb.append(new File(user).getParent() +"/"+name));
+          sb.append(new File(user).getParent() +"/"+name);
             sb.append(",");
             sb.append(ee.IDESessionUUID);
             sb.append(",");
@@ -666,7 +795,7 @@ public class GettingStarted {
             sb.append(",");
             sb.append(ee.TriggeredAt);
             sb.append(",");
-            sb.append("N/A");
+            sb.append("N/A,");
             sb.append("\n");
 
             pw.write(sb.toString());
@@ -679,7 +808,7 @@ public class GettingStarted {
           String name = new File(user).getName();
           String u_name = name.substring(0,name.lastIndexOf(".zip"));
           infoe+=1;
-          sb.append(sb.append(new File(user).getParent() +"/"+name));
+            sb.append(new File(user).getParent() +"/"+name);
             sb.append(",");
             sb.append(ie.IDESessionUUID);
             sb.append(",");
@@ -687,7 +816,7 @@ public class GettingStarted {
             sb.append(",");
             sb.append(ie.TriggeredAt);
             sb.append(",");
-            sb.append("N/A");
+            sb.append("N/A,");
             sb.append("\n");
 
             pw.write(sb.toString());
@@ -699,7 +828,7 @@ public class GettingStarted {
           String name = new File(user).getName();
           String u_name = name.substring(0,name.lastIndexOf(".zip"));
           navigationevents+=1;
-          sb.append(sb.append(new File(user).getParent() +"/"+name));
+          sb.append(new File(user).getParent() +"/"+name);
           sb.append(",");
           sb.append(ne.IDESessionUUID);
           sb.append(",");
@@ -707,7 +836,7 @@ public class GettingStarted {
           sb.append(",");
           sb.append(ne.TriggeredAt);
           sb.append(",");
-          sb.append("N/A");
+          sb.append("N/A,");
           sb.append("\n");
 
           pw.write(sb.toString());
@@ -719,7 +848,7 @@ public class GettingStarted {
           String name = new File(user).getName();
           String u_name = name.substring(0,name.lastIndexOf(".zip"));
           systemevents+=1;
-          sb.append(sb.append(new File(user).getParent() +"/"+name));
+          sb.append(new File(user).getParent() +"/"+name);
             sb.append(",");
             sb.append(se.IDESessionUUID);
             sb.append(",");
@@ -727,7 +856,7 @@ public class GettingStarted {
             sb.append(",");
             sb.append(se.TriggeredAt);
             sb.append(",");
-            sb.append("N/A");
+            sb.append("N/A,");
             sb.append("\n");
 
             pw.write(sb.toString());
@@ -742,7 +871,7 @@ public class GettingStarted {
          String name = new File(user).getName();
          String u_name = name.substring(0,name.lastIndexOf(".zip"));
          other+=1;
-         sb.append(sb.append(new File(user).getParent() +"/"+name));
+         sb.append(new File(user).getParent() +"/"+name);
          sb.append(",");
          sb.append("N/A");
          sb.append(",");
